@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#000000">
+  <meta name="description" content="A strange little five-page zine from the internet.">
+  <title>YOUR NAME // ZINE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://w.soundcloud.com/player/api.js" defer></script>
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <!-- Add your looping video at assets/background.mp4. The fallback remains black. -->
+  <div class="background" aria-hidden="true">
+    <video id="main-bg" autoplay loop muted playsinline poster="assets/background-poster.jpg">
+      <source src="assets/background.mp4" type="video/mp4">
+    </video>
+  </div>
+  <div class="background-shade" aria-hidden="true"></div>
+
+  <!-- Entry gesture selects and starts one SoundCloud track. -->
+  <section class="entry-overlay" id="entry-overlay" role="dialog" aria-modal="true" aria-labelledby="warning-title">
+    <div class="warning-frame">
+      <p class="warning-kicker">-- -.-- / .--. . .-. ... --- -. .- .-.. / .-- . -...</p>
+      <h1 id="warning-title">ARE YOU<br>GOOD ENOUGH?</h1>
+      <p class="warning-copy">THIS PAGE IS NOT FOR YOU</p>
+      <button class="enter-button" id="enter-button" type="button">[ ENTER ]</button>
+      <p class="warning-foot">CLICK TO CONTINUE</p>
+    </div>
+  </section>
+
+  <!-- The hidden, offscreen iframe is populated with a random track after ENTER. -->
+  <div class="soundcloud-host" aria-hidden="true">
+    <iframe id="soundcloud-player" title="Background SoundCloud player" src="about:blank" allow="autoplay" tabindex="-1"></iframe>
+  </div>
+  <button class="audio-toggle" id="audio-toggle" type="button" aria-label="Play background music" title="Play / pause background music" hidden>
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path class="music-note" d="M9 18V5l12-2v13M9 18c0 1.7-1.6 3-3.5 3S2 20 2 18.5 3.6 16 5.5 16 9 16.3 9 18Zm12-2c0 1.7-1.6 3-3.5 3S14 18 14 16.5 15.6 14 17.5 14 21 14.3 21 16Z"/>
+      <path class="music-slash" d="M3 3 21 21"/>
+    </svg>
+  </button>
+
+  <main class="zine-wrap" aria-label="Five page digital zine">
+    <div class="pages" id="pages" aria-live="polite">
+      <!-- PAGE 1 / PROFILE -->
+      <div class="page page-one is-active" data-page="0" aria-label="Page 1: Profile">
+        <span class="page-mark">CASE 001 / ME</span>
+        <div class="profile-frame">
+          <img id="dynamic-profile-pic" src="assets/profile-1.jpg" alt="Portrait of Your Name" onerror="this.hidden=true;this.nextElementSibling.hidden=false">
+        </div>
+        <p class="overline">artist/musician/designer/fashion stylist</p>
+        <h1>NIZHAM<br>ALMULKI</h1>
+        <p class="caption">aka Mariobolong aka traumario aka MARIOBLEODD </p>
+        <p class="nav-hint">→</p>
+      </div>
+
+      <!-- PAGE 2 / SOCIAL LINKS -->
+      <div class="page page-two" data-page="1" aria-label="Page 2: Social links" hidden>
+        <span class="page-mark">02 / CONTACT ME</span>
+        <p class="overline">FIND ME</p>
+        <h2>MY SOCIAL</h2>
+        <div class="social-links">
+          <p>[01] <a href="https://www.instagram.com/nizhamulki/" target="_blank" rel="noopener noreferrer">INSTAGRAM</a></p>
+          <p>[02] <a href="https://www.tiktok.com/@nizhamulki" target="_blank" rel="noopener noreferrer">TIKTOK</a></p>
+          <p>[03] <a href="https://soundcloud.com/projectsulfur" target="_blank" rel="noopener noreferrer">SOUNDCLOUD</a></p>
+        </div>
+        <p class="scribble">WANNA COLLAB? JUST DM ME!</p>
+      </div>
+
+      <!-- PAGE 3 / BRAND -->
+      <div class="page page-three" data-page="2" aria-label="Page 3: Brand" hidden>
+        <span class="page-mark">03 / PROJECT</span>
+        <p class="overline">| LABEL |</p>
+        <div class="brand-mark"><img src="assets/kalam-logo.png" alt="KALAM Logo" class="kalam-logo"></div>
+        <h2>KALAM</h2>
+        <p class="brand-copy">a brand born out of a desire to help people gain a deeper understanding of the avant-garde, starting with something simple</p>
+        <a class="brand-link" href="https://www.instagram.com/kalam.naa/" target="_blank" rel="noopener noreferrer">[ SEE MORE ABOUT KALAM ]</a>
+      </div>
+
+      <!-- PAGE 4 / PHOTO SCRAPBOOK. Replace image paths and original-post URLs. -->
+      <div class="page page-four" data-page="3" aria-label="Page 4: Photo scrapbook" hidden>
+        <span class="page-mark">04 / CREATION</span>
+        <p class="overline">FRAGMENTS</p>
+        <h2>MY RECENT<br>PR0JECT</h2>
+        <div class="carousel" aria-label="Photo carousel">
+          <div class="carousel-viewport">
+            <div class="carousel-track" id="carousel-track" aria-label="Eight scrapbook photos">
+              <a class="carousel-photo" href="#" target="_blank" rel="noopener noreferrer" aria-label="Check the post for photo one">
+                <span class="dual-image"><img class="img-primary" src="assets/photo-1a.jpg" alt="Scrapbook photo one" onerror="this.hidden=true;this.parentElement.querySelector('.photo-fallback').hidden=false"><img class="img-secondary" src="assets/photo-1b.jpg" alt="" aria-hidden="true"><span class="photo-fallback" hidden>PHOTO_01</span></span><span class="carousel-caption">somewhere / once</span>
+              </a>
+              <a class="carousel-photo" href="#" target="_blank" rel="noopener noreferrer" aria-label="Check the post for photo two">
+                <span class="dual-image"><img class="img-primary" src="assets/photo-2a.jpg" alt="Scrapbook photo two" onerror="this.hidden=true;this.parentElement.querySelector('.photo-fallback').hidden=false"><img class="img-secondary" src="assets/photo-2b.jpg" alt="" aria-hidden="true"><span class="photo-fallback" hidden>PHOTO_02</span></span><span class="carousel-caption">unlabeled</span>
+              </a>
+              <a class="carousel-photo" href="#" target="_blank" rel="noopener noreferrer" aria-label="Check the post for photo three">
+                <span class="dual-image"><img class="img-primary" src="assets/photo-3a.jpg" alt="Scrapbook photo three" onerror="this.hidden=true;this.parentElement.querySelector('.photo-fallback').hidden=false"><img class="img-secondary" src="assets/photo-3b.jpg" alt="" aria-hidden="true"><span class="photo-fallback" hidden>PHOTO_03</span></span><span class="carousel-caption">the good bit</span>
+              </a>
+              <a class="carousel-photo" href="#" target="_blank" rel="noopener noreferrer" aria-label="Check the post for photo four">
+                <span class="dual-image"><img class="img-primary" src="assets/photo-4a.jpg" alt="Scrapbook photo four" onerror="this.hidden=true;this.parentElement.querySelector('.photo-fallback').hidden=false"><img class="img-secondary" src="assets/photo-4b.jpg" alt="" aria-hidden="true"><span class="photo-fallback" hidden>PHOTO_04</span></span><span class="carousel-caption">from the archive</span>
+              </a>
+              <a class="carousel-photo" href="#" target="_blank" rel="noopener noreferrer" aria-label="Check the post for photo five">
+                <span class="dual-image"><img class="img-primary" src="assets/photo-5a.jpg" alt="Scrapbook photo five" onerror="this.hidden=true;this.parentElement.querySelector('.photo-fallback').hidden=false"><img class="img-secondary" src="assets/photo-5b.jpg" alt="" aria-hidden="true"><span class="photo-fallback" hidden>PHOTO_05</span></span><span class="carousel-caption">out of context</span>
+              </a>
+              <a class="carousel-photo" href="#" target="_blank" rel="noopener noreferrer" aria-label="Check the post for photo six">
+                <span class="dual-image"><img class="img-primary" src="assets/photo-6a.jpg" alt="Scrapbook photo six" onerror="this.hidden=true;this.parentElement.querySelector('.photo-fallback').hidden=false"><img class="img-secondary" src="assets/photo-6b.jpg" alt="" aria-hidden="true"><span class="photo-fallback" hidden>PHOTO_06</span></span><span class="carousel-caption">no location</span>
+              </a>
+              <a class="carousel-photo" href="#" target="_blank" rel="noopener noreferrer" aria-label="Check the post for photo seven">
+                <span class="dual-image"><img class="img-primary" src="assets/photo-7a.jpg" alt="Scrapbook photo seven" onerror="this.hidden=true;this.parentElement.querySelector('.photo-fallback').hidden=false"><img class="img-secondary" src="assets/photo-7b.jpg" alt="" aria-hidden="true"><span class="photo-fallback" hidden>PHOTO_07</span></span><span class="carousel-caption">kept anyway</span>
+              </a>
+              <a class="carousel-photo" href="#" target="_blank" rel="noopener noreferrer" aria-label="Check the post for photo eight">
+                <span class="dual-image"><img class="img-primary" src="assets/photo-8a.jpg" alt="Scrapbook photo eight" onerror="this.hidden=true;this.parentElement.querySelector('.photo-fallback').hidden=false"><img class="img-secondary" src="assets/photo-8b.jpg" alt="" aria-hidden="true"><span class="photo-fallback" hidden>PHOTO_08</span></span><span class="carousel-caption">end of roll</span>
+              </a>
+            </div>
+          </div>
+          <div class="carousel-controls" aria-label="Carousel controls">
+            <button type="button" id="carousel-prev">[ &larr; PREV ]</button>
+            <span class="carousel-count" id="carousel-count" aria-live="polite">01 / 08</span>
+            <button type="button" id="carousel-next">[ NEXT &rarr; ]</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAGE 5 / OUTRO -->
+      <div class="page page-five" data-page="4" aria-label="Page 5: Outro" hidden>
+        <span class="page-mark">05 / END TRANSMISSION</span>
+        <div class="outro-mark" aria-hidden="true">X</div>
+        <p class="overline">YOU MADE IT TO THE EDGE</p>
+        <h2>THANK<br>YOU.</h2>
+        <p class="outro-copy">Thanks for visiting this tiny corner of the very large web.</p>
+        <a class="release-gateway" href="#" target="_blank" rel="noopener noreferrer">[ CHECK MY NEW RELEASE ]</a>
+        <a class="blog-gateway" href="blog.html">[ MORE ABOUT ME ]</a>
+        <p class="nav-hint">[ CLICK LEFT TO RETURN / RIGHT TO RESTART ]</p>
+      </div>
+    </div>
+
+  </main>
+</body>
+</html>
