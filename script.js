@@ -1,4 +1,4 @@
-// SoundCloud random-track startup and five-page left/right navigation.
+﻿// SoundCloud random-track startup and five-page left/right navigation.
 (() => {
   const pages = [...document.querySelectorAll('.page[data-page]')];
   const pageNumber = document.querySelector('[data-page-number]');
@@ -52,7 +52,7 @@
   let shouldBePaused = false;
   let apiWaitTimer = null;
   let carouselIndex = 0;
-  let carouselAnimating = false;
+  let lastAudioTouch = 0;
 
   const updateAudioIcon = playing => {
     audioToggle?.classList.toggle('is-playing', Boolean(playing));
@@ -140,10 +140,13 @@
     entryOverlay?.setAttribute('aria-hidden', 'true');
     if (audioToggle) audioToggle.hidden = false;
     loadRandomSoundCloudTrack();
+    if (window.SC?.Widget && playerFrame) window.SC.Widget(playerFrame).play();
+    if (widget) { shouldBePaused = false; widget.play(); }
   };
 
   enterButton?.addEventListener('click', enterZine);
-  audioToggle?.addEventListener('click', () => {
+  enterButton?.addEventListener('touchstart', enterZine, { passive: true });
+  const toggleAudio = () => {
     if (!entered) return;
     if (widgetReady && widget) {
       widget.isPaused(paused => {
@@ -154,36 +157,35 @@
       shouldBePaused = !shouldBePaused;
       updateAudioIcon(false);
     }
+  };
+  audioToggle?.addEventListener('touchend', event => {
+    event.preventDefault();
+    lastAudioTouch = Date.now();
+    toggleAudio();
   });
+  audioToggle?.addEventListener('click', () => {
+    if (Date.now() - lastAudioTouch < 700) return;
+    toggleAudio();
+  });
+
+  let carouselAnimating = false;
+  let suppressCarouselClick = false;
+  const updateCarouselCount = () => {
+    const photos = carouselTrack ? [...carouselTrack.querySelectorAll('.carousel-photo')] : [];
+    if (carouselCount && photos.length) carouselCount.textContent = `${String(carouselIndex + 1).padStart(2, '0')} / ${String(photos.length).padStart(2, '0')}`;
+  };
 
   const moveCarousel = direction => {
     if (!carouselTrack || carouselAnimating) return;
+    const photos = [...carouselTrack.querySelectorAll('.carousel-photo')];
+    if (photos.length < 2) return;
+    const first = photos[0];
+    const gap = parseFloat(getComputedStyle(carouselTrack).columnGap || getComputedStyle(carouselTrack).gap) || 0;
+    const step = first.getBoundingClientRect().width + gap;
+    if (!step) return;
     carouselAnimating = true;
-    const first = carouselTrack.firstElementChild;
-    const step = first ? first.getBoundingClientRect().width + parseFloat(getComputedStyle(carouselTrack).columnGap || 0) : 0;
-    if (!step) { carouselAnimating = false; return; }
-    let completed = false;
-    let fallbackTimer;
-    const finish = () => {
-      if (completed) return;
-      completed = true;
-      window.clearTimeout(fallbackTimer);
-      carouselTrack.removeEventListener('transitionend', onTransitionEnd);
-      // Forward motion reorders after the slide; backward motion already
-      // prepended the previous item before animating into its final position.
-      if (direction > 0) carouselTrack.append(carouselTrack.firstElementChild);
-      carouselTrack.style.transition = 'none';
-      carouselTrack.style.transform = 'translateX(0)';
-      void carouselTrack.offsetWidth;
-      carouselTrack.style.transition = '';
-      carouselIndex = (carouselIndex + direction + 8) % 8;
-      if (carouselCount) carouselCount.textContent = `${String(carouselIndex + 1).padStart(2, '0')}–${String((carouselIndex + 4 - 1) % 8 + 1).padStart(2, '0')} / 08`;
-      carouselAnimating = false;
-    };
-    const onTransitionEnd = event => { if (event.propertyName === 'transform') finish(); };
-    carouselTrack.addEventListener('transitionend', onTransitionEnd);
     if (direction < 0) {
-      carouselTrack.prepend(carouselTrack.lastElementChild);
+      carouselTrack.prepend(photos[photos.length - 1]);
       carouselTrack.style.transition = 'none';
       carouselTrack.style.transform = `translateX(${-step}px)`;
       void carouselTrack.offsetWidth;
@@ -192,9 +194,53 @@
     } else {
       carouselTrack.style.transform = `translateX(${-step}px)`;
     }
-    fallbackTimer = window.setTimeout(finish, 420);
+
+    let finished = false;
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      clearTimeout(fallbackTimer);
+      carouselTrack.removeEventListener('transitionend', onTransitionEnd);
+      if (direction > 0) carouselTrack.append(carouselTrack.firstElementChild);
+      carouselTrack.style.transition = 'none';
+      carouselTrack.style.transform = 'translateX(0)';
+      void carouselTrack.offsetWidth;
+      carouselTrack.style.transition = '';
+      carouselIndex = (carouselIndex + direction + photos.length) % photos.length;
+      updateCarouselCount();
+      carouselAnimating = false;
+    };
+    const onTransitionEnd = event => {
+      if (event.target === carouselTrack && event.propertyName === 'transform') finish();
+    };
+    carouselTrack.addEventListener('transitionend', onTransitionEnd);
+    const fallbackTimer = window.setTimeout(finish, 450);
   };
 
+  const carouselViewport = document.querySelector('.carousel-viewport');
+  let swipeStart = null;
+  carouselViewport?.addEventListener('touchstart', event => {
+    const touch = event.changedTouches[0];
+    if (touch) swipeStart = { x: touch.clientX, y: touch.clientY };
+  }, { passive: true });
+  carouselViewport?.addEventListener('touchend', event => {
+    const touch = event.changedTouches[0];
+    if (!touch || !swipeStart) return;
+    const dx = touch.clientX - swipeStart.x;
+    const dy = touch.clientY - swipeStart.y;
+    swipeStart = null;
+    if (Math.abs(dx) < 35 || Math.abs(dx) < Math.abs(dy)) return;
+    suppressCarouselClick = true;
+    window.setTimeout(() => { suppressCarouselClick = false; }, 500);
+    moveCarousel(dx < 0 ? 1 : -1);
+  }, { passive: true });
+  carouselViewport?.addEventListener('touchcancel', () => { swipeStart = null; }, { passive: true });
+  carouselViewport?.addEventListener('click', event => {
+    if (!suppressCarouselClick) return;
+    event.preventDefault();
+    event.stopPropagation();
+    suppressCarouselClick = false;
+  }, true);
   // Carousel interactions stop before the document-level page-turn handler.
   const carousel = document.querySelector('.carousel');
   carousel?.addEventListener('click', event => event.stopPropagation());
@@ -215,4 +261,5 @@
 
   renderPage(current);
   updateAudioIcon(false);
+  updateCarouselCount();
 })();
