@@ -49,10 +49,15 @@
   let entered = false;
   let widget = null;
   let widgetReady = false;
-  let shouldBePaused = false;
+  let audioIsPlaying = false;
+  let shouldBePaused = true;
   let apiWaitTimer = null;
   let carouselIndex = 0;
   let lastAudioTouch = 0;
+  let widgetInitStarted = false;
+  let widgetReadyTimer = null;
+  let audioCommandPending = false;
+  let audioCommandTimer = null;
 
   const updateAudioIcon = playing => {
     audioToggle?.classList.toggle('is-playing', Boolean(playing));
@@ -85,20 +90,28 @@
   };
 
   const bindWidget = () => {
-    if (!playerFrame || !window.SC?.Widget || widget) return;
+    if (!playerFrame || !window.SC?.Widget || widget || widgetInitStarted) return;
+    widgetInitStarted = true;
     try {
       widget = window.SC.Widget(playerFrame);
       const events = window.SC.Widget.Events;
       widget.bind(events.READY, () => {
         widgetReady = true;
-        if (shouldBePaused) widget.pause();
-        else widget.play();
+        if (widgetReadyTimer) { clearTimeout(widgetReadyTimer); widgetReadyTimer = null; }
+        if (!shouldBePaused) {
+          try { widget.play(); } catch (_) { /* A fresh tap can retry in restrictive browsers. */ }
+        }
       });
-      widget.bind(events.PLAY, () => { shouldBePaused = false; updateAudioIcon(true); });
-      widget.bind(events.PAUSE, () => { shouldBePaused = true; updateAudioIcon(false); });
-      widget.bind(events.FINISH, () => updateAudioIcon(false));
+      const settleAudioCommand = () => {
+        audioCommandPending = false;
+        if (audioCommandTimer) { clearTimeout(audioCommandTimer); audioCommandTimer = null; }
+      };
+      widget.bind(events.PLAY, () => { settleAudioCommand(); audioIsPlaying = true; shouldBePaused = false; updateAudioIcon(true); });
+      widget.bind(events.PAUSE, () => { settleAudioCommand(); audioIsPlaying = false; shouldBePaused = true; updateAudioIcon(false); });
+      widget.bind(events.FINISH, () => { audioIsPlaying = false; updateAudioIcon(false); });
     } catch (_) {
       widget = null;
+      widgetInitStarted = false;
     }
   };
 
@@ -107,17 +120,22 @@
     const track = soundCloudTracks[Math.floor(Math.random() * soundCloudTracks.length)];
     const params = new URLSearchParams({
       url: track,
-      auto_play: 'true',
+      auto_play: 'false',
       hide_related: 'true',
       show_comments: 'false',
       show_user: 'true',
       show_reposts: 'false',
       visual: 'true'
     });
-    shouldBePaused = false;
+    shouldBePaused = true;
     updateAudioIcon(false);
     playerFrame.addEventListener('load', bindWidget, { once: true });
     playerFrame.src = `https://w.soundcloud.com/player/?${params.toString()}`;
+    widgetReadyTimer = window.setTimeout(() => {
+      if (!widgetReady) {
+        if (apiWaitTimer) { clearInterval(apiWaitTimer); apiWaitTimer = null; }
+      }
+    }, 12000);
 
     // If the API script arrives after the iframe, keep checking briefly for its constructor.
     if (apiWaitTimer) window.clearInterval(apiWaitTimer);
@@ -139,22 +157,24 @@
     entryOverlay?.classList.add('is-dismissed');
     entryOverlay?.setAttribute('aria-hidden', 'true');
     if (audioToggle) audioToggle.hidden = false;
-    loadRandomSoundCloudTrack();
-    if (window.SC?.Widget && playerFrame) window.SC.Widget(playerFrame).play();
-    if (widget) { shouldBePaused = false; widget.play(); }
+    try { loadRandomSoundCloudTrack(); } catch (_) { /* Audio failure must not block entry or navigation. */ }
   };
 
   enterButton?.addEventListener('click', enterZine);
-  enterButton?.addEventListener('touchstart', enterZine, { passive: true });
   const toggleAudio = () => {
     if (!entered) return;
-    if (widgetReady && widget) {
-      widget.isPaused(paused => {
-        if (paused) { shouldBePaused = false; widget.play(); }
-        else { shouldBePaused = true; widget.pause(); }
-      });
-    } else {
+    if (!widgetReady || !widget) {
       shouldBePaused = !shouldBePaused;
+      updateAudioIcon(false);
+      return;
+    }
+    if (audioCommandPending) return;
+    shouldBePaused = audioIsPlaying;
+    audioCommandPending = true;
+    audioCommandTimer = window.setTimeout(() => { audioCommandPending = false; audioCommandTimer = null; }, 1500);
+    try { shouldBePaused ? widget.pause() : widget.play(); } catch (_) {
+      audioCommandPending = false;
+      if (audioCommandTimer) { clearTimeout(audioCommandTimer); audioCommandTimer = null; }
       updateAudioIcon(false);
     }
   };
@@ -245,7 +265,16 @@
   const carousel = document.querySelector('.carousel');
   carousel?.addEventListener('click', event => event.stopPropagation());
   carouselTrack?.addEventListener('click', event => {
-    if (event.target instanceof Element && event.target.closest('.carousel-photo')) event.stopPropagation();
+    if (!(event.target instanceof Element)) return;
+    const photo = event.target.closest('.carousel-photo');
+    if (!photo) return;
+    event.preventDefault();
+    event.stopPropagation();
+    if (window.matchMedia('(hover: none), (pointer: coarse)').matches) {
+      const wasActive = photo.classList.contains('is-touch-active');
+      carouselTrack.querySelectorAll('.carousel-photo.is-touch-active').forEach(card => card.classList.remove('is-touch-active'));
+      if (!wasActive) photo.classList.add('is-touch-active');
+    }
   });
   carouselPrev?.addEventListener('click', event => { event.stopPropagation(); moveCarousel(-1); });
   carouselNext?.addEventListener('click', event => { event.stopPropagation(); moveCarousel(1); });

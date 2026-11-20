@@ -21,7 +21,7 @@
   </div>
   <div class="background-shade" aria-hidden="true"></div>
 
-  <!-- Entry gesture selects and starts one SoundCloud track. -->
+  <!-- Entry dismisses the warning; music is controlled separately. -->
   <section class="entry-overlay" id="entry-overlay" role="dialog" aria-modal="true" aria-labelledby="warning-title">
     <div class="warning-frame">
       <p class="warning-kicker">-- -.-- / .--. . .-. ... --- -. .- .-.. / .-- . -...</p>
@@ -88,29 +88,29 @@
         <div class="carousel" aria-label="Photo carousel" aria-roledescription="carousel">
           <div class="carousel-viewport">
             <div class="carousel-track" id="carousel-track" aria-label="Eight scrapbook photos" role="group" aria-roledescription="slides">
-              <a class="carousel-photo" href="#" target="_blank" rel="noopener noreferrer" aria-label="Check the post for photo one">
+              <a class="carousel-photo" href="#" aria-label="Check the post for photo one">
                 <span class="dual-image"><img class="img-primary" src="assets/photo-1a.jpg" alt="Scrapbook photo one" onerror="this.hidden=true;this.parentElement.querySelector('.photo-fallback').hidden=false"><img class="img-secondary" src="assets/photo-1b.jpg" alt="" aria-hidden="true"><span class="photo-fallback" hidden>PHOTO_01</span></span><span class="carousel-caption">somewhere / once</span>
               </a>
-              <a class="carousel-photo" href="#" target="_blank" rel="noopener noreferrer" aria-label="Check the post for photo two">
+              <a class="carousel-photo" href="#" aria-label="Check the post for photo two">
                 <span class="dual-image"><img class="img-primary" src="assets/photo-2a.jpg" alt="Scrapbook photo two" onerror="this.hidden=true;this.parentElement.querySelector('.photo-fallback').hidden=false"><img class="img-secondary" src="assets/photo-2b.jpg" alt="" aria-hidden="true"><span class="photo-fallback" hidden>PHOTO_02</span></span><span class="carousel-caption">unlabeled</span>
               </a>
-              <a class="carousel-photo" href="#" target="_blank" rel="noopener noreferrer" aria-label="Check the post for photo three">
+              <a class="carousel-photo" href="#" aria-label="Check the post for photo three">
                 <span class="dual-image"><img class="img-primary" src="assets/photo-3a.jpg" alt="Scrapbook photo three" onerror="this.hidden=true;this.parentElement.querySelector('.photo-fallback').hidden=false"><img class="img-secondary" src="assets/photo-3b.jpg" alt="" aria-hidden="true"><span class="photo-fallback" hidden>PHOTO_03</span></span><span class="carousel-caption">the good bit</span>
               </a>
-              <a class="carousel-photo" href="#" target="_blank" rel="noopener noreferrer" aria-label="Check the post for photo four">
+              <a class="carousel-photo" href="#" aria-label="Check the post for photo four">
                 <span class="dual-image"><img class="img-primary" src="assets/photo-4a.jpg" alt="Scrapbook photo four" onerror="this.hidden=true;this.parentElement.querySelector('.photo-fallback').hidden=false"><img class="img-secondary" src="assets/photo-4b.jpg" alt="" aria-hidden="true"><span class="photo-fallback" hidden>PHOTO_04</span></span><span class="carousel-caption">from the archive</span>
               </a>
-              <a class="carousel-photo" href="#" target="_blank" rel="noopener noreferrer" aria-label="Check the post for photo five">
-                <span class="dual-image"><img class="img-primary" src="assets/photo-5a.jpg" alt="Scrapbook photo five" onerror="this.hidden=true;this.parentElement.querySelector('.photo-fallback').hidden=false"><img class="img-secondary" src="assets/photo-5b.jpg" alt="" aria-hidden="true"><span class="photo-fallback" hidden>PHOTO_05</span></span><span class="carousel-caption">out of context</span>
+              <a class="carousel-photo" href="#" aria-label="Check the post for photo five">
+                <span class="dual-image"><img class="img-primary" src="assets/photo-5a.JPG" alt="Scrapbook photo five" onerror="this.hidden=true;this.parentElement.querySelector('.photo-fallback').hidden=false"><img class="img-secondary" src="assets/photo-5b.JPG" alt="" aria-hidden="true"><span class="photo-fallback" hidden>PHOTO_05</span></span><span class="carousel-caption">out of context</span>
               </a>
-              <a class="carousel-photo" href="#" target="_blank" rel="noopener noreferrer" aria-label="Check the post for photo six">
-                <span class="dual-image"><img class="img-primary" src="assets/photo-6a.jpg" alt="Scrapbook photo six" onerror="this.hidden=true;this.parentElement.querySelector('.photo-fallback').hidden=false"><img class="img-secondary" src="assets/photo-6b.jpg" alt="" aria-hidden="true"><span class="photo-fallback" hidden>PHOTO_06</span></span><span class="carousel-caption">no location</span>
+              <a class="carousel-photo" href="#" aria-label="Check the post for photo six">
+                <span class="dual-image"><img class="img-primary" src="assets/photo-6a.JPG" alt="Scrapbook photo six" onerror="this.hidden=true;this.parentElement.querySelector('.photo-fallback').hidden=false"><img class="img-secondary" src="assets/photo-6b.JPG" alt="" aria-hidden="true"><span class="photo-fallback" hidden>PHOTO_06</span></span><span class="carousel-caption">no location</span>
               </a>
-              <a class="carousel-photo" href="#" target="_blank" rel="noopener noreferrer" aria-label="Check the post for photo seven">
-                <span class="dual-image"><img class="img-primary" src="assets/photo-7a.jpg" alt="Scrapbook photo seven" onerror="this.hidden=true;this.parentElement.querySelector('.photo-fallback').hidden=false"><img class="img-secondary" src="assets/photo-7b.jpg" alt="" aria-hidden="true"><span class="photo-fallback" hidden>PHOTO_07</span></span><span class="carousel-caption">kept anyway</span>
+              <a class="carousel-photo" href="#" aria-label="Check the post for photo seven">
+                <span class="dual-image"><img class="img-primary" src="assets/photo-7a.JPG" alt="Scrapbook photo seven" onerror="this.hidden=true;this.parentElement.querySelector('.photo-fallback').hidden=false"><img class="img-secondary" src="assets/photo-7b.JPG" alt="" aria-hidden="true"><span class="photo-fallback" hidden>PHOTO_07</span></span><span class="carousel-caption">kept anyway</span>
               </a>
-              <a class="carousel-photo" href="#" target="_blank" rel="noopener noreferrer" aria-label="Check the post for photo eight">
-                <span class="dual-image"><img class="img-primary" src="assets/photo-8a.jpg" alt="Scrapbook photo eight" onerror="this.hidden=true;this.parentElement.querySelector('.photo-fallback').hidden=false"><img class="img-secondary" src="assets/photo-8b.jpg" alt="" aria-hidden="true"><span class="photo-fallback" hidden>PHOTO_08</span></span><span class="carousel-caption">end of roll</span>
+              <a class="carousel-photo" href="#" aria-label="Check the post for photo eight">
+                <span class="dual-image"><img class="img-primary" src="assets/photo-8a.JPG" alt="Scrapbook photo eight" onerror="this.hidden=true;this.parentElement.querySelector('.photo-fallback').hidden=false"><img class="img-secondary" src="assets/photo-8b.JPG" alt="" aria-hidden="true"><span class="photo-fallback" hidden>PHOTO_08</span></span><span class="carousel-caption">end of roll</span>
               </a>
             </div>
           </div>
